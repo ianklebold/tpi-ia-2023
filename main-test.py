@@ -1,3 +1,8 @@
+# Authors:
+#   Kalbermatter, Alan
+#   Fernandez, Ian
+#   Hadad Menegaz, Jorge Miguel
+
 import pandas as pd
 import math
 
