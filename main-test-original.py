@@ -158,7 +158,6 @@ for i, instancia_nueva in enumerate(instancias_random, start=1):
 
     # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para esta instancia
     df_coincidencias_instancia = pd.DataFrame(resultados_instancia)
-    resultados.append({"Instancia": f"i{i}", "Resultados": df_coincidencias_instancia})
     print(f"\nResultados para la instancia i{i}:")
     print(df_coincidencias_instancia)
     
@@ -171,10 +170,22 @@ coincidencias_por_k.append([''] * len(columnas))
 
 # Crear el DataFrame para mostrar los vecinos por cada k
 df_vecinos_por_k = pd.DataFrame(vecinos_por_k, columns=columnas)
-print("\nVecinos más cercanos por cada k para cada instancia:")
-print(df_vecinos_por_k)
+# Eliminar la última fila del DataFrame df_vecinos_por_k
+df_vecinos_por_k = df_vecinos_por_k.drop(df_vecinos_por_k.index[-1])
 
 # Crear el DataFrame para mostrar las coincidencias por cada k
 df_coincidencias_por_k = pd.DataFrame(coincidencias_por_k, columns=columnas)
+# Eliminar la última fila del DataFrame df_coincidencias_por_k
+df_coincidencias_por_k = df_coincidencias_por_k.drop(df_coincidencias_por_k.index[-1])
+
+# Transponer solo el contenido debajo de las columnas de las ix
+df_vecinos_por_k.iloc[:, 1:] = df_vecinos_por_k.iloc[:, 1:].values.T
+df_coincidencias_por_k.iloc[:, 1:] = df_coincidencias_por_k.iloc[:, 1:].values.T
+
+# Imprimir el DataFrame con los resultados de vecinos por k
+print("\nVecinos más cercanos por cada k para cada instancia:")
+print(df_vecinos_por_k)
+
+# Imprimir el DataFrame con los resultados de coincidencias por k
 print("\nCoincidencias por cada k para cada instancia:")
 print(df_coincidencias_por_k)
