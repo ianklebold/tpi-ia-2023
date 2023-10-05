@@ -7,7 +7,7 @@ import pandas as pd
 import math
 
 # Lee el dataset desde un archivo CSV
-dataset = pd.read_csv('resources\dataset_cleaned_fixed.csv')
+dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
 
 # Renombrar las columnas
 dataset.rename(columns={
