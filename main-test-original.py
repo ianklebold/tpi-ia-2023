@@ -5,9 +5,11 @@
 
 import pandas as pd
 import math
+import random
+
 
 # Lee el dataset desde un archivo CSV
-dataset = pd.read_csv('resources\dataset_cleaned_fixed.csv')
+dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
 
 # Renombrar las columnas
 dataset.rename(columns={
@@ -51,8 +53,8 @@ for index, row in dataset.iterrows():
     # Crea una instancia y la agrega a la lista
     instancia = Instancia(id_instancia, atributos, clase)
     instancias.append(instancia)
-   
-#Mostrar detalles de los vecinos encontrados por instancia en cada K    
+
+#Mostrar detalles de los vecinos encontrados por instancia en cada K
 def mostrar_vecinos(vecinos_mas_cercanos, k):
     df_resultados = pd.DataFrame({
         'ID': [vecino.id for vecino in vecinos_mas_cercanos],
@@ -82,10 +84,10 @@ def mostrar_vecinos(vecinos_mas_cercanos, k):
     print("------------------------------------\n")
 
 # Función para calcular la distancia entre dos instancias
-def calcular_distancia(instancia1, instancia2):
+def calcular_distancia(instancia, instancia_nueva):
     distancia = 0
-    for i in range(len(instancia1.atributos)):
-        distancia += (instancia1.atributos[i] - instancia2.atributos[i]) ** 2
+    for i in range(len(instancia.atributos)):
+        distancia += (instancia.atributos[i] - instancia_nueva.atributos[i]) ** 2
     return math.sqrt(distancia)
 
 # Función para encontrar los k vecinos más cercanos a una instancia nueva
@@ -99,8 +101,6 @@ def encontrar_vecinos_mas_cercanos(instancias, instancia_nueva, k):
     return vecinos
 
 # Ejemplo de uso
-
-import random
 
 # Obtener 6 instancias aleatorias del dataset
 instancias_random = random.sample(instancias, 6)
@@ -125,7 +125,7 @@ for i, instancia_nueva in enumerate(instancias_random, start=1):
     # Lista para almacenar los vecinos más cercanos para cada k
     vecinos_k_actual = []
     coincidencias_k_actual = []
-    
+
     # Iterar para k de 1 a 5
     for k in range(1, 7):
         # Encuentra los vecinos más cercanos
@@ -137,14 +137,14 @@ for i, instancia_nueva in enumerate(instancias_random, start=1):
 
         # Ordena los vecinos por distancia
         vecinos_mas_cercanos.sort(key=lambda x: x.distancia)
-        
+
         # Crea un DataFrame para mostrar los resultados
         mostrar_vecinos(vecinos_mas_cercanos, k)
 
         # Almacena el ID del último vecino más cercano para esta instancia y k
         vecinos_k_actual.append(vecinos_mas_cercanos[-1].id)
-        
-        # Almacena la cantidad de coincidencias 
+
+        # Almacena la cantidad de coincidencias
         coincidencias_k_actual.append(sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase))
 
         # Cuenta cuántas predicciones coinciden con el valor de la clase
@@ -160,7 +160,7 @@ for i, instancia_nueva in enumerate(instancias_random, start=1):
     df_coincidencias_instancia = pd.DataFrame(resultados_instancia)
     print(f"\nResultados para la instancia i{i}:")
     print(df_coincidencias_instancia)
-    
+
 
 # Ajuste de columnas para el DataFrame de vecinos por k
 columnas = ['K'] + [f'i{i}' for i in range(1, 7)]
