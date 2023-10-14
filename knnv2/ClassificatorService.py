@@ -1,8 +1,8 @@
-import CalculateDistanceService as calculateDistanceService
-
-
 # Mandar esto a una carpeta a parte
 # Un conjunto es una lista de instancias con la misma clasificacion
+from knnv2 import CalculateDistanceService
+
+
 class Conjunto:
     def __init__(self, clasificacion=None, lista_de_instancias=None):
         if lista_de_instancias is None:
@@ -48,7 +48,7 @@ def getSets(list_of_classes, vecinos_mas_cercanos):
 def getClassification():
     k_neighbors = 6
     classes = getClasses([0, 1])
-    neighbors_more_earn = calculateDistanceService.findNeighborMoreEarn(k_neighbors)
+    neighbors_more_earn = CalculateDistanceService.findNeighborMoreEarn(k_neighbors)
     sets = getSets(classes, neighbors_more_earn)
     sets_classified = list()
 

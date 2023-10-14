@@ -18,7 +18,7 @@ class Instancia:
 
 def getDataset():
     # Lee el dataset desde un archivo CSV
-    dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
+    dataset = pd.read_csv('../resources/dataset_cleaned_fixed.csv')
     newDataset = Dataset(dataset)
     newDataset.data = dataset
 

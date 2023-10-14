@@ -1,6 +1,7 @@
-import ProcessingData as processingData
 import math
 import random
+
+from knnv2 import ProcessingData
 
 
 def calculateDistance(instance, new_instance):
@@ -12,10 +13,10 @@ def calculateDistance(instance, new_instance):
 
 def findNeighborMoreEarn(k):
     # Esto lo debe ingresar el usuario
-    new_instance = processingData.getInstances().pop(random.randint(0, len(processingData.getInstances())))
+    new_instance = ProcessingData.getInstances().pop(random.randint(0, len(ProcessingData.getInstances())))
 
     training_examples = []
-    for instance in processingData.getInstances():
+    for instance in ProcessingData.getInstances():
         distance = calculateDistance(instance, new_instance)
         training_examples.append((instance, distance))
     training_examples.sort(key=lambda x: x[1])
