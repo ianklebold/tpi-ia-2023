@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
 # Lee el dataset desde un archivo CSV
-dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
+dataset = pd.read_csv('resources\DataFinal_facu.csv')
 
 # Divide el dataset en características (X) y etiquetas (y)
 id_column = dataset.iloc[:, 0]

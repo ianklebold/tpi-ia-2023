@@ -174,7 +174,7 @@ vecinos_por_k = []
 # Lista para almacenar las coincidencias por cada k para cada instancia
 coincidencias_por_k = []
 
-cantidad_de_vecinos = 6
+cantidad_de_vecinos = 11
 
 # Iterar para cada instancia aleatoria
 for i, instancia_nueva in enumerate(instancias_test, start=1):
