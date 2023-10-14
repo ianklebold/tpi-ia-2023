@@ -13,10 +13,11 @@ def calculateDistance(instance, new_instance):
 
 def findNeighborMoreEarn(k):
     # Esto lo debe ingresar el usuario
-    new_instance = ProcessingData.getInstances().pop(random.randint(0, len(ProcessingData.getInstances())))
+    instances = ProcessingData.getInstances()
+    new_instance = instances.pop(random.randint(0, len(instances)))
 
     training_examples = []
-    for instance in ProcessingData.getInstances():
+    for instance in instances:
         distance = calculateDistance(instance, new_instance)
         training_examples.append((instance, distance))
     training_examples.sort(key=lambda x: x[1])

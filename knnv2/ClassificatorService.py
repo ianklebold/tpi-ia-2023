@@ -23,7 +23,7 @@ def calculateClassification(vecinos_mas_cercanos, classification):
     # d(c1,f(x1))+  d(c1,f(x2)) +  d(c1,f(x3))
     amount = 0
     for neighbor in vecinos_mas_cercanos:
-        if neighbor[0].clase == classification:
+        if neighbor.clase == classification:
             amount += 1
         else:
             amount += 0
@@ -41,12 +41,11 @@ def getClasses(list_of_identifications):
 def getSets(list_of_classes, vecinos_mas_cercanos):
     sets = list()
     for class_instance in list_of_classes:
-        list_of_classes.append(Conjunto(class_instance.nombre, vecinos_mas_cercanos))
+        sets.append(Conjunto(class_instance.nombre, vecinos_mas_cercanos))
     return sets
 
 
-def getClassification():
-    k_neighbors = 6
+def getClassification(k_neighbors):
     classes = getClasses([0, 1])
     neighbors_more_earn = CalculateDistanceService.findNeighborMoreEarn(k_neighbors)
     sets = getSets(classes, neighbors_more_earn)
@@ -58,4 +57,4 @@ def getClassification():
 
     sets_classified.sort(key=lambda x: x[1])
 
-    return sets_classified.pop(0)
+    return sets_classified.pop(1)[0].classification
