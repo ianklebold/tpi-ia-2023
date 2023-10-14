@@ -23,3 +23,18 @@ def findNeighborMoreEarn(k):
     training_examples.sort(key=lambda x: x[1])
     neighbor_more_earns = [instance[0] for instance in training_examples[:k]]
     return neighbor_more_earns
+
+def calculateDistanceManhattan(instance, new_instance):
+    distance = 0
+    for i in range(len(instance.atributos)):
+      distance += abs(instance.atributos[i] - new_instance.atributos[i])
+    return distance
+
+
+def calculateChebyshevDistance(instance, new_instance):
+  distances = []
+  for i in range(len(instance.atributos)):
+    distances.append(abs(instance.atributos[i] - new_instance.atributos[i]))
+  return max(distances)
+
+
