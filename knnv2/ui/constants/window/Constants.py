@@ -1,6 +1,6 @@
 # Sizes
-X_SIZE = 830
-Y_SIZE = 1000
+X_SIZE = 940
+Y_SIZE = 750
 
 # Templates
 WINDOW_TITLE_TEMPLATE = "Knn Predictions"

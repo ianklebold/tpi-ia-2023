@@ -6,16 +6,27 @@ from knnv2.ui.constants.window.Constants import *
 
 
 window = tkinter.Tk()
-window.title(WINDOW_TITLE_TEMPLATE)
-window.minsize(X_SIZE, Y_SIZE)
+window.geometry(str(X_SIZE)+"x"+str(Y_SIZE))
 
-
-label = tkinter.Label(window, text=UPLOAD_DATA_SET_TEMPLATE)
+#Logo configuration
+label = tkinter.Label(window, text="Logo")
 logo = tkinter.PhotoImage(file='images/logo.png')
+label.place(x=390, y=20)
 label.config(image=logo)
-label.pack()
 
-buttonGo = tkinter.Button(window, text=GO_TEMPLATE)
-buttonGo.pack()
+
+tkinter.Label(window, text="Sample Label2")
+tkinter.Label(window, text="Sample Label3")
+tkinter.Label(window, text="Sample Label4")
+
+#def buttonGoPress():
+#    print("Go!")
+
+
+#buttonGo = tkinter.Button(window, text=GO_TEMPLATE)
+#buttonGo.config(command=buttonGoPress)
+#buttonGo.config(state='disabled')
+#buttonGo.pack()
+
 
 window.mainloop()
