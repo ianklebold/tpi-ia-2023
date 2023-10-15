@@ -45,9 +45,9 @@ def getSets(list_of_classes, vecinos_mas_cercanos):
     return sets
 
 
-def getClassification(k_neighbors):
+def getClassification(k_neighbors, method):
     classes = getClasses([0, 1])
-    neighbors_more_earn = CalculateDistanceService.findNeighborMoreEarn(k_neighbors)
+    neighbors_more_earn = CalculateDistanceService.findNeighborMoreEarn(k_neighbors, method)
     sets = getSets(classes, neighbors_more_earn)
     sets_classified = list()
 
