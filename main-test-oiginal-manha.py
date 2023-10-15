@@ -93,7 +93,7 @@ def knn_predict(train_data, test_data, k):
     return predictions
 
 # Ejemplo de uso del algoritmo KNN con distancia Manhattan y k=5
-k = 11
+k = 24
 predictions = knn_predict(train_data, test_data, k)
 
 # Imprimir las predicciones obtenidas
