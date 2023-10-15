@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
 # Lee el dataset desde un archivo CSV
-dataset = pd.read_csv('resources\DataFinal_facu.csv')
+dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
 
 # Divide el dataset en características (X) y etiquetas (y)
 id_column = dataset.iloc[:, 0]
@@ -30,7 +30,7 @@ print("y_train:")
 print(y_train.head())
 
 # Crea una instancia del clasificador KNN con un valor de K deseado
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=11)
 
 # Entrena el modelo utilizando el conjunto de entrenamiento
 knn.fit(X_train, y_train)
