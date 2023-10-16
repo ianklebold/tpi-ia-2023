@@ -6,7 +6,7 @@
 import pandas as pd
 import math
 import random
-
+import warnings
 
 # Lee el dataset desde un archivo CSV
 # dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
@@ -174,12 +174,18 @@ def calcular_distancia_manhattan(instancia, instancia_nueva):
         distancia += abs(instancia.atributos[i] - instancia_nueva.atributos[i])
     return distancia
 
-# Función para calcular la distancia de Minkowski
+
 def minkowski_distance(x1, x2, p):
     distance = 0
     for i in range(len(x1)):
         distance += abs(x1[i] - x2[i]) ** p
-    return distance ** (1/p)
+
+    # Deshabilitar la advertencia específica (overflow)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="overflow encountered in double_scalars")
+        result = distance ** (1/p)
+    
+    return result
 
 # Función para encontrar los k vecinos más cercanos utilizando la distancia de Minkowski
 def find_nearest_neighbors_minkowski(test_instance, train_data, train_labels, k, p):
