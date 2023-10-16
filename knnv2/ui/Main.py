@@ -12,14 +12,13 @@ def browse_file():
     max = 30
     if file_path:
         if len(file_path) > max:
-            half_length = int(max / 2)
+            # Recortar a la mitad y agregar puntos de continuación
+            half_length = int(max/2)  # La mitad de 200
             truncated_text = file_path[:half_length] + "..."
         else:
             truncated_text = file_path
         choose_label.config(text="File Path: " + truncated_text)
-        messagebox.showinfo("Información", "Archivo seleccionado y guardado con éxito: " + file_path)
-    else:
-        return None
+
 
 
 def open_new_window():
@@ -57,6 +56,7 @@ file_path_label.place(x=370, y=160)
 
 browse_button = tkinter.Button(window, text="Browse file", command=browse_file)
 browse_button.place(x=500, y=190)
+
 
 # Botón para abrir una nueva ventana
 new_instance_label = tkinter.Label(window, text="Crear nueva instancia")
