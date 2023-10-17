@@ -23,6 +23,8 @@ sysbp_entry = None
 hr_entry = None
 save_button = None
 new_window = None
+form_data = dict()
+
 
 def browse_file():
     global file_path
@@ -36,13 +38,15 @@ def browse_file():
             truncated_text = file_path
         choose_label.config(text="File Path: " + truncated_text)
 
+
 def save_data():
+    global form_data
     # Recuperar los datos ingresados por el usuario
     age = age_entry.get()
     education = education_var.get()
     sex = sex_var.get()
     is_smoking = is_smoking_var.get()
-    if(is_smoking):
+    if (is_smoking):
         cig_per_day = cig_per_day_entry.get()
     else:
         cig_per_day = 0
@@ -57,26 +61,25 @@ def save_data():
     sysbp = sysbp_entry.get()
     heart_rate = hr_entry.get()
 
-    # Realizar acciones con los datos recuperados
-    # Por ejemplo, puedes imprimirlos en la consola
-    print("Age:", age)
-    print("Education:", education)
-    print("Sex:", sex)
-    print("Is Smoking:", is_smoking)
-    print("Cig Per Day:", cig_per_day)
-    print("BMI:", bmi)
-    print("DiaBP:", diabp)
-    print("Glucose:", glucose)
-    print("BPMeds:", bpmeds)
-    print("Prevalent Stroke:", stroke)
-    print("Prevalent Hyp:", hypert)
-    print("Diabetes:", diabetes)
-    print("totChol:", totchol)
-    print("SysBp:", sysbp)
-    print("HeartRate:", heart_rate)
-
+    form_data = {
+        "Age": age,
+        "Education": education,
+        "Sex": sex,
+        "Is Smoking": is_smoking,
+        "Cig Per Day": cig_per_day,
+        "BMI": bmi,
+        "DiaBP": diabp,
+        "Glucose": glucose,
+        "BPMeds": bpmeds,
+        "Prevalent Stroke": stroke,
+        "Prevalent Hyp": hypert,
+        "Diabetes": diabetes,
+        "totChol": totchol,
+        "SysBp": sysbp,
+        "HeartRate": heart_rate
+    }
+    print(form_data)
     new_window.destroy()
-
 
 
 def open_new_window():
@@ -228,10 +231,10 @@ def open_new_window():
     save_button = tkinter.Button(form_frame, text="Guardar", command=save_data)
     save_button.grid(row=21, column=0, columnspan=2, pady=10)  # Agrega espaciado entre el botón y el formulario
 
+
 window = tkinter.Tk()
 window.minsize(X_SIZE, Y_SIZE)
 window.geometry(str(X_SIZE) + "x" + str(Y_SIZE))
-
 
 # Logo configuration
 label = tkinter.Label(window, text="Logo")
@@ -260,8 +263,21 @@ new_window_button.place(x=500, y=300)
 
 file_path = None
 
+
+def classify_data():
+    # Verifica si se ha cargado un archivo
+    if not file_path:
+        messagebox.showerror("Error", "Por favor, primero carga un archivo.")
+        return
+
+    # Muestra los datos en un cuadro de mensaje
+    data = f"Age: {form_data.get('Age')}\nEducation: {form_data.get('Education')}\nSex: {form_data.get('Sex')}\nIs Smoking: {form_data.get('Is Smoking')}\nCig Per Day: {form_data.get('Cig Per Day')}\nBMI: {form_data.get('BMI')}\nDiaBP: {form_data.get('DiaBP')}\nGlucose: {form_data.get('Glucose')}\nBPMeds: {form_data.get('BPMeds')}\nPrevalent Stroke: {form_data.get('Prevalent Stroke')}\nPrevalent Hyp: {form_data.get('Prevalent Hyp')}\nDiabetes: {form_data.get('Diabetes')}\ntotChol: {form_data.get('totChol')}\nSysBp: {form_data.get('SysBp')}\nHeartRate: {form_data.get('HeartRate')}"
+
+    messagebox.showinfo("Datos del Formulario", data)
+
+
+# Botón "Clasificar"
+classify_button = tkinter.Button(window, text="Clasificar", command=classify_data)
+classify_button.place(x=145, y=330)
+
 window.mainloop()
-
-
-
-
