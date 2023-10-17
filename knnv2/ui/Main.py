@@ -4,6 +4,7 @@ from tkinter import messagebox
 from knnv2.ui.constants.button.Constants import *
 from knnv2.ui.constants.label.Constants import *
 from knnv2.ui.constants.window.Constants import *
+from tkinter import font
 
 # Define los campos como variables globales
 age_entry = None
@@ -24,6 +25,7 @@ hr_entry = None
 save_button = None
 new_window = None
 form_data = dict()
+background_color = "#3D3935"
 
 
 def browse_file():
@@ -79,6 +81,7 @@ def save_data():
         "HeartRate": heart_rate
     }
     print(form_data)
+    instance_label.config(text="Data uploaded")
     new_window.destroy()
 
 
@@ -103,10 +106,11 @@ def open_new_window():
 
     new_window = tkinter.Toplevel(window)
     new_window.title("Nueva Instancia")
+    new_window.configure(background=background_color)
     new_window.minsize(1100, 1000)
 
     # Logo configuration
-    new_label = tkinter.Label(new_window, text="Logo")
+    new_label = tkinter.Label(new_window, text="Logo", background=background_color)
     new_label.place(x=390, y=20)
     logo = tkinter.PhotoImage(file='images/logo.png')
     new_label.config(image=logo)
@@ -233,33 +237,38 @@ def open_new_window():
 
 
 window = tkinter.Tk()
+custom_font = font.Font(family="Istok web", size=10)
+window.option_add("*Font", custom_font)
 window.minsize(X_SIZE, Y_SIZE)
+window.configure(background=background_color)
 window.geometry(str(X_SIZE) + "x" + str(Y_SIZE))
 
 # Logo configuration
-label = tkinter.Label(window, text="Logo")
+label = tkinter.Label(window, text="Logo", background=background_color)
 logo = tkinter.PhotoImage(file='images/logo.png')
 label.place(x=390, y=20)
 label.config(image=logo)
 
 # Upload dataset file section
-upload_label = tkinter.Label(window, text="Upload dataset file")
+upload_label = tkinter.Label(window, text="Upload dataset file", background=background_color, fg='white', width=30, highlightbackground='black', anchor="w")
 upload_label.place(x=145, y=170)
 
-choose_label = tkinter.Label(window, text="Choose file to upload")
-choose_label.place(x=150, y=195)
+choose_label = tkinter.Label(window, text="Choose file to upload", borderwidth=1, relief="solid", background='#4A483F', fg='white', highlightbackground='black', width=44, height=1, pady=5, anchor="s")
+choose_label.place(x=145, y=191)
 
 file_path_label = tkinter.Label(window, text="")
 file_path_label.place(x=370, y=160)
 
-browse_button = tkinter.Button(window, text="Browse file", command=browse_file)
+browse_button = tkinter.Button(window, text="Browse file", command=browse_file, background='#1E1E1E', fg='white', highlightbackground='black', width=15, borderwidth=1, relief="solid")
 browse_button.place(x=500, y=190)
 
 # Botón para abrir una nueva ventana
-new_instance_label = tkinter.Label(window, text="Crear nueva instancia")
-new_instance_label.place(x=145, y=290)
-new_window_button = tkinter.Button(window, text="Nueva instancia", command=open_new_window)
+new_instance_label = tkinter.Label(window, text="Create new instance", background=background_color, fg='white', width=30, highlightbackground='black', anchor="w")
+new_instance_label.place(x=145, y=280)
+new_window_button = tkinter.Button(window, text="New instance", command=open_new_window, background='#1E1E1E', fg='white', highlightbackground='black', width=15, borderwidth=1, relief="solid")
 new_window_button.place(x=500, y=300)
+instance_label = tkinter.Label(window, text="No data loaded", borderwidth=1, relief="solid", background='#4A483F', fg='white', highlightbackground='black', width=44, height=1, pady=6, anchor="s")
+instance_label.place(x=145, y=300)
 
 file_path = None
 
@@ -277,7 +286,9 @@ def classify_data():
 
 
 # Botón "Clasificar"
-classify_button = tkinter.Button(window, text="Clasificar", command=classify_data)
-classify_button.place(x=145, y=330)
+classify_button = tkinter.Button(window, text="Go!", command=classify_data, borderwidth=1, relief="solid", background='#4A483F', fg='white', highlightbackground='black')
+classify_button.place(x=400, y=500)
+
+
 
 window.mainloop()
