@@ -5,11 +5,7 @@
 
 import pandas as pd
 import math
-import random
 import warnings
-
-# Lee el dataset desde un archivo CSV
-# dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
 
 # Lee el dataset de entrenamiento desde un archivo CSV
 train_data = pd.read_csv('train_data.csv')
@@ -17,46 +13,30 @@ train_data = pd.read_csv('train_data.csv')
 # Lee el dataset de prueba desde un archivo CSV
 test_data = pd.read_csv('test_data.csv')
 
-# Renombrar las columnas
-train_data.rename(columns={
-    # 'id': 'ID',
-    'age': 'Edad',
-    'education': 'Educación',
-    'sex': 'Sexo',
-    'is_smoking': 'Fumador',
-    'cigsPerDay': 'Cigarrillos por Día',
-    'BPMeds': 'Toma Medicamentos Pre ART',
-    'prevalentStroke': 'Derrame Cerebral',
-    'prevalentHyp': 'Hipertenso',
-    'diabetes': 'Diabetes',
-    'totChol': 'Colesterol Total',
-    'sysBP': 'Presión Arterial Sistólica',
-    'diaBP': 'Presión Arterial Diastólica',
-    'BMI': 'IMC',
-    'heartRate': 'Frecuencia Cardíaca',
-    'glucose': 'Nivel de Glucosa',
-    'TenYearCHD': 'Predicción'
-}, inplace=True)
+def rename_columns_dataset(dataset):
+    dataset.rename(columns={
+        # 'id': 'ID',
+        'age': 'Edad',
+        'education': 'Educación',
+        'sex': 'Sexo',
+        'is_smoking': 'Fumador',
+        'cigsPerDay': 'Cigarrillos por Día',
+        'BPMeds': 'Toma Medicamentos Pre ART',
+        'prevalentStroke': 'Derrame Cerebral',
+        'prevalentHyp': 'Hipertenso',
+        'diabetes': 'Diabetes',
+        'totChol': 'Colesterol Total',
+        'sysBP': 'Presión Arterial Sistólica',
+        'diaBP': 'Presión Arterial Diastólica',
+        'BMI': 'IMC',
+        'heartRate': 'Frecuencia Cardíaca',
+        'glucose': 'Nivel de Glucosa',
+        'TenYearCHD': 'Predicción'
+    }, inplace=True)
 
-test_data.rename(columns={
-    # 'id': 'ID',
-    'age': 'Edad',
-    'education': 'Educación',
-    'sex': 'Sexo',
-    'is_smoking': 'Fumador',
-    'cigsPerDay': 'Cigarrillos por Día',
-    'BPMeds': 'Toma Medicamentos Pre ART',
-    'prevalentStroke': 'Derrame Cerebral',
-    'prevalentHyp': 'Hipertenso',
-    'diabetes': 'Diabetes',
-    'totChol': 'Colesterol Total',
-    'sysBP': 'Presión Arterial Sistólica',
-    'diaBP': 'Presión Arterial Diastólica',
-    'BMI': 'IMC',
-    'heartRate': 'Frecuencia Cardíaca',
-    'glucose': 'Nivel de Glucosa',
-    'TenYearCHD': 'Predicción'
-}, inplace=True)
+# Renombrar las columnas
+rename_columns_dataset(train_data)
+rename_columns_dataset(test_data)
 
 # Normalización min-max
 def min_max_normalize(data):
@@ -67,16 +47,6 @@ def min_max_normalize(data):
         normalized_data[feature] = (data[feature] - min_value) / (max_value - min_value)
     return normalized_data
 
-# Aplicar one-hot encoding a las variables categóricas PARA MANHATTAN
-# train_data = pd.get_dummies(train_data, columns=['Sexo', 'Fumador'])
-# test_data = pd.get_dummies(test_data, columns=['Sexo', 'Fumador'])
-
-# # Normalizar los datos de entrenamiento
-# train_data = min_max_normalize(train_data)
-
-# # Normalizar los datos de prueba
-# test_data = min_max_normalize(test_data)
-
 
 # Crea una clase para representar cada instancia
 class Instancia:
@@ -85,20 +55,6 @@ class Instancia:
         self.atributos = atributos
         self.clase = clase
 
-# Crea una lista para almacenar las instancias
-instancias = []
-
-# # Itera sobre las filas del dataset
-# for index, row in dataset.iterrows():
-#     # Obtiene los atributos de la instancia y los convierte a tipo 'float'
-#     atributos = [float(value) for value in row[1:-1]]
-#     # Obtiene el ID de la instancia
-#     id_instancia = int(row['id'])
-#     # Obtiene la clase de la instancia
-#     clase = row[-1]
-#     # Crea una instancia y la agrega a la lista
-#     instancia = Instancia(id_instancia, atributos, clase)
-#     instancias.append(instancia)
 
 # Crea una lista para almacenar las instancias del dataset de entrenamiento
 instancias_train = []
@@ -199,93 +155,9 @@ def find_nearest_neighbors_minkowski(test_instance, train_data, train_labels, k,
     neighbors = distances[:k]
     return neighbors
 
-
-# Función para encontrar los k vecinos más cercanos a una instancia nueva
-def encontrar_vecinos_mas_cercanos(instancias, instancia_nueva, k):
-    distancias = []
-    for instancia in instancias:
-        distancia = calcular_distancia(instancia, instancia_nueva)
-        distancias.append((instancia, distancia))
-    distancias.sort(key=lambda x: x[1])
-    vecinos = [instancia[0] for instancia in distancias[:k]]
-    return vecinos
-
-# Ejemplo de uso
-
-# Obtener 6 instancias aleatorias del dataset
-instancias_random_test = random.sample(instancias_test, 8)
-
-# Lista para almacenar los resultados de las instancias aleatorias
-resultados_random = []
-
-# Lista para almacenar los resultados de las coincidencias
-resultados = []
-
-# Lista para almacenar los vecinos más cercanos por cada k para cada instancia
-vecinos_por_k = []
-
-# Lista para almacenar las coincidencias por cada k para cada instancia
-coincidencias_por_k = []
-
-cantidad_de_vecinos = 11
-
-# # Iterar para cada instancia aleatoria
-# for i, instancia_nueva in enumerate(instancias_test, start=1):
-#     # Lista para almacenar los resultados para esta instancia aleatoria
-#     resultados_instancia = []
-
-#     # Lista para almacenar los vecinos más cercanos para cada k
-#     vecinos_k_actual = []
-#     coincidencias_k_actual = []
-
-#     # Iterar para k de 1 a 5
-#     for k in range(1, cantidad_de_vecinos + 1):
-#         # Encuentra los vecinos más cercanos
-#         vecinos_mas_cercanos = encontrar_vecinos_mas_cercanos(instancias_train, instancia_nueva, k)
-
-#         # Calcula la distancia para cada vecino
-#         for vecino in vecinos_mas_cercanos:
-#             vecino.distancia = calcular_distancia_manhattan(vecino, instancia_nueva)
-
-#         # Ordena los vecinos por distancia
-#         vecinos_mas_cercanos.sort(key=lambda x: x.distancia)
-
-#         # Crea un DataFrame para mostrar los resultados
-#         # mostrar_vecinos(vecinos_mas_cercanos, k)
-
-#         # Almacena el ID del último vecino más cercano para esta instancia y k
-#         vecinos_k_actual.append(vecinos_mas_cercanos[-1].id)
-
-#         # Almacena la cantidad de coincidencias
-#         coincidencias_k_actual.append(sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase))
-
-#         # Cuenta cuántas predicciones coinciden con el valor de la clase
-#         coincidencias = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase)
-
-#         # Almacena los resultados
-#         resultados_instancia.append({'K': f'k={k}', 'Coincidencias': coincidencias})
-
-#     vecinos_por_k.append([f'k={i}'] + vecinos_k_actual)
-#     coincidencias_por_k.append([f'k={i}'] + coincidencias_k_actual)
-
-#     # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para esta instancia
-#     df_coincidencias_instancia = pd.DataFrame(resultados_instancia)
-#     print(f"\nResultados para la instancia i{i}:")
-#     print(df_coincidencias_instancia)
-    
-#     # Calcula la precisión del modelo para esta instancia
-#     precision = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase) / k
-#     resultados_random.append({'i': f'i{i}', 'Precisión': precision})
-
-# # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para todas las instancias
-# df_resultados_random = pd.DataFrame(resultados_random)
-# print("\nResultados de precisión para todas las instancias:")
-# print(df_resultados_random)
-
-# # Calcula la precisión promedio del modelo
-# precision_promedio = df_resultados_random['Precisión'].mean()
-# print("Precisión promedio del modelo:", precision_promedio)
-
+##########################################################################
+##########################################################################
+##########################################################################
 
 
 if __name__ == "__main__":
@@ -310,7 +182,8 @@ if __name__ == "__main__":
 ##########################################################################
 # Clasificación del conjunto de prueba utilizando la distancia euclidiana
 ##########################################################################
-#         distance = euclidean_distance(test_instance, instance)
+
+# Función para calcular la distancia euclidiana entre dos instancias
 def euclidean_distance(test_instance, instance):
     # Inicializar la distancia
     distance = 0
@@ -321,7 +194,7 @@ def euclidean_distance(test_instance, instance):
     # Calcular la raíz cuadrada de la distancia
     return math.sqrt(distance)
 
-#         neighbors = find_nearest_neighbors_euclidean(test_instance, train_data.values[:, :-1], train_data.values[:, -1], k)
+# Función para encontrar los k vecinos más cercanos utilizando la distancia euclidiana
 def find_nearest_neighbors_euclidean(test_instance, train_data, train_labels, k):
     # Lista para almacenar las distancias
     distances = []
@@ -357,7 +230,7 @@ if tipo_calculo == 'calcular_distancia_euclidiana':
         if prediction == test_data.values[i][-1]:
             correct_predictions += 1
     accuracy = correct_predictions / len(predictions)
-    print("Precisión del modelo:", accuracy)
+    print("Precisión del modelo: {:.2f}%".format(accuracy * 100))
         
 ##########################################################################
 ##########################################################################
@@ -397,6 +270,7 @@ if tipo_calculo == 'calcular_distancia_minkowski':
 # Clasificación del conjunto de prueba utilizando la distancia Manhattan
 ########################################################################
 
+# Función para calcular la distancia Manhattan entre dos instancias
 def calcular_distancia_manhattan(train_data, test_instance):
     # Inicializa la distancia en 0
     distance = 0
@@ -406,6 +280,7 @@ def calcular_distancia_manhattan(train_data, test_instance):
     # Retorna la distancia Manhattan entre la instancia de prueba y la instancia actual del conjunto de entrenamiento
     return distance
 
+# Función para encontrar los k vecinos más cercanos utilizando la distancia Manhattan
 def find_nearest_neighbors_manhattan(test_instance, train_data, train_labels, k):
     # Lista para almacenar los vecinos más cercanos
     neighbors = []
@@ -439,82 +314,3 @@ if tipo_calculo == "calcular_distancia_manhattan":
     accuracy = correct_predictions / len(predictions)
     print("Precisión del modelo: {:.2f}%".format(accuracy * 100))
     
-
-
-
-# # Ajuste de columnas para el DataFrame de vecinos por k
-# columnas = ['K'] + [f'i{i}' for i in range(1, cantidad_de_vecinos + 1)]
-# # Añadimos una lista vacía para ajustar las columnas
-# vecinos_por_k.append([''] * len(columnas))
-# coincidencias_por_k.append([''] * len(columnas))
-
-# # Crear el DataFrame para mostrar los vecinos por cada k
-# df_vecinos_por_k = pd.DataFrame(vecinos_por_k, columns=columnas)
-# # Eliminar la última fila del DataFrame df_vecinos_por_k
-# df_vecinos_por_k = df_vecinos_por_k.drop(df_vecinos_por_k.index[-1])
-
-# # Crear el DataFrame para mostrar las coincidencias por cada k
-# df_coincidencias_por_k = pd.DataFrame(coincidencias_por_k, columns=columnas)
-# # Eliminar la última fila del DataFrame df_coincidencias_por_k
-# df_coincidencias_por_k = df_coincidencias_por_k.drop(df_coincidencias_por_k.index[-1])
-
-# print("\nVecinos más cercanos por cada k ANTES TEST para cada instancia:")
-# print(df_vecinos_por_k.shape)
-# print(df_vecinos_por_k.head())
-# print("\nCoincidencias por cada k ANTES TEST para cada instancia:")
-# print(df_coincidencias_por_k.shape)
-# print(df_coincidencias_por_k.head())
-
-# # Verificar si el DataFrame tiene la misma cantidad de filas que de columnas
-# if df_coincidencias_por_k.shape[0] + 1 != df_coincidencias_por_k.shape[1]:
-#     # Calculate the difference between the number of rows and columns
-#     diff = abs(df_coincidencias_por_k.shape[0] - df_coincidencias_por_k.shape[1]) - 1
-    
-#     # Add rows or columns as needed
-#     if df_coincidencias_por_k.shape[0] + 1 < df_coincidencias_por_k.shape[1]:
-#         for i in range(diff):
-#             df_coincidencias_por_k = df_coincidencias_por_k.append([pd.Series([None] * len(df_coincidencias_por_k.columns))], ignore_index=True)
-#     elif df_coincidencias_por_k.shape[0] + 1 > df_coincidencias_por_k.shape[1]:
-#         for i in range(diff):
-#             df_coincidencias_por_k[len(df_coincidencias_por_k.columns)] = [None] * len(df_coincidencias_por_k)
-        
-#     print("\nCoincidencias por cada k TEST para cada instancia:")
-#     print(df_coincidencias_por_k)
-    
-# if df_vecinos_por_k.shape[0] + 1 != df_vecinos_por_k.shape[1]:
-#     # Calculate the difference between the number of rows and columns
-#     diff = abs(df_vecinos_por_k.shape[0] - df_vecinos_por_k.shape[1]) - 1
-    
-#     # Add rows or columns as needed
-#     if df_vecinos_por_k.shape[0] + 1 < df_vecinos_por_k.shape[1]:
-#         print("La cantidad de columnas es mayor que la cantidad de filas")
-#         for i in range(diff):
-#             df_vecinos_por_k = df_vecinos_por_k.append([pd.Series([None] * len(df_vecinos_por_k.columns))], ignore_index=True)
-#     elif df_vecinos_por_k.shape[0] + 1 > df_vecinos_por_k.shape[1]:
-#         print("La cantidad de filas es mayor que la cantidad de columnas")
-#         for i in range(diff):
-#             df_vecinos_por_k[len(df_vecinos_por_k.columns)] = [None] * (len(df_vecinos_por_k) + 1)
-    
-#     print("\nVecinos más cercanos  TEST por cada k para cada instancia:")
-#     print(df_vecinos_por_k)
-    
-#     # Rellenar los valores faltantes con None o NaN
-#     # df_vecinos_por_k.fillna(0, inplace=True)
-#     # df_coincidencias_por_k.fillna(0, inplace=True)
-
-
-# # Transponer solo el contenido debajo de las columnas de las ix
-# print("\nVecinos más cercanos por cada k DESPUES TEST para cada instancia:")
-# #mostrar cantidad de filas y columnas
-# print(df_vecinos_por_k.shape)
-# print(df_coincidencias_por_k.shape)
-# df_vecinos_por_k.iloc[:, 1:] = df_vecinos_por_k.iloc[:, 1:].T
-# df_coincidencias_por_k.iloc[:, 1:] = df_coincidencias_por_k.iloc[:, 1:].T
-
-# # Imprimir el DataFrame con los resultados de vecinos por k
-# print("\nVecinos más cercanos por cada k para cada instancia:")
-# print(df_vecinos_por_k)
-
-# # Imprimir el DataFrame con los resultados de coincidencias por k
-# print("\nCoincidencias por cada k para cada instancia:")
-# print(df_coincidencias_por_k)
