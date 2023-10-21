@@ -30,7 +30,7 @@ print("y_train:")
 print(y_train.head())
 
 # Crea una instancia del clasificador KNN con un valor de K deseado
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=11)
 
 # Entrena el modelo utilizando el conjunto de entrenamiento
 knn.fit(X_train, y_train)

@@ -6,7 +6,7 @@
 import pandas as pd
 import math
 import random
-
+import warnings
 
 # Lee el dataset desde un archivo CSV
 # dataset = pd.read_csv('resources/dataset_cleaned_fixed.csv')
@@ -57,7 +57,26 @@ test_data.rename(columns={
     'glucose': 'Nivel de Glucosa',
     'TenYearCHD': 'Predicción'
 }, inplace=True)
-    
+
+# Normalización min-max
+def min_max_normalize(data):
+    normalized_data = data.copy()
+    for feature in data.columns:
+        max_value = data[feature].max()
+        min_value = data[feature].min()
+        normalized_data[feature] = (data[feature] - min_value) / (max_value - min_value)
+    return normalized_data
+
+# Aplicar one-hot encoding a las variables categóricas PARA MANHATTAN
+# train_data = pd.get_dummies(train_data, columns=['Sexo', 'Fumador'])
+# test_data = pd.get_dummies(test_data, columns=['Sexo', 'Fumador'])
+
+# # Normalizar los datos de entrenamiento
+# train_data = min_max_normalize(train_data)
+
+# # Normalizar los datos de prueba
+# test_data = min_max_normalize(test_data)
+
 
 # Crea una clase para representar cada instancia
 class Instancia:
@@ -147,6 +166,37 @@ def calcular_distancia(instancia, instancia_nueva):
         distancia += (instancia.atributos[i] - instancia_nueva.atributos[i]) ** 2
     return math.sqrt(distancia)
 
+#https://www.sciencedirect.com/topics/mathematics/manhattan-distance#:~:text=1)%20Manhattan%20Distance%20%3D%20%7C%20x,in%20a%20higher-dimensional%20space
+#Realizar el calculo de la distancia Manhattan
+def calcular_distancia_manhattan(instancia, instancia_nueva):
+    distancia = 0
+    for i in range(len(instancia.atributos)):
+        distancia += abs(instancia.atributos[i] - instancia_nueva.atributos[i])
+    return distancia
+
+
+def minkowski_distance(x1, x2, p):
+    distance = 0
+    for i in range(len(x1)):
+        distance += abs(x1[i] - x2[i]) ** p
+
+    # Deshabilitar la advertencia específica (overflow)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="overflow encountered in double_scalars")
+        result = distance ** (1/p)
+    
+    return result
+
+# Función para encontrar los k vecinos más cercanos utilizando la distancia de Minkowski
+def find_nearest_neighbors_minkowski(test_instance, train_data, train_labels, k, p):
+    distances = []
+    for i in range(len(train_data)):
+        dist = minkowski_distance(test_instance, train_data[i], p)
+        distances.append((dist, train_labels[i]))
+    distances.sort(key=lambda x: x[0])
+    neighbors = distances[:k]
+    return neighbors
+
 # Función para encontrar los k vecinos más cercanos a una instancia nueva
 def encontrar_vecinos_mas_cercanos(instancias, instancia_nueva, k):
     distancias = []
@@ -174,64 +224,220 @@ vecinos_por_k = []
 # Lista para almacenar las coincidencias por cada k para cada instancia
 coincidencias_por_k = []
 
-cantidad_de_vecinos = 6
+cantidad_de_vecinos = 11
 
-# Iterar para cada instancia aleatoria
-for i, instancia_nueva in enumerate(instancias_test, start=1):
-    # Lista para almacenar los resultados para esta instancia aleatoria
-    resultados_instancia = []
+# # Iterar para cada instancia aleatoria
+# for i, instancia_nueva in enumerate(instancias_test, start=1):
+#     # Lista para almacenar los resultados para esta instancia aleatoria
+#     resultados_instancia = []
 
-    # Lista para almacenar los vecinos más cercanos para cada k
-    vecinos_k_actual = []
-    coincidencias_k_actual = []
+#     # Lista para almacenar los vecinos más cercanos para cada k
+#     vecinos_k_actual = []
+#     coincidencias_k_actual = []
 
-    # Iterar para k de 1 a 5
-    for k in range(1, cantidad_de_vecinos + 1):
-        # Encuentra los vecinos más cercanos
-        vecinos_mas_cercanos = encontrar_vecinos_mas_cercanos(instancias_train, instancia_nueva, k)
+#     # Iterar para k de 1 a 5
+#     for k in range(1, cantidad_de_vecinos + 1):
+#         # Encuentra los vecinos más cercanos
+#         vecinos_mas_cercanos = encontrar_vecinos_mas_cercanos(instancias_train, instancia_nueva, k)
 
-        # Calcula la distancia para cada vecino
-        for vecino in vecinos_mas_cercanos:
-            vecino.distancia = calcular_distancia(vecino, instancia_nueva)
+#         # Calcula la distancia para cada vecino
+#         for vecino in vecinos_mas_cercanos:
+#             vecino.distancia = calcular_distancia_manhattan(vecino, instancia_nueva)
 
-        # Ordena los vecinos por distancia
-        vecinos_mas_cercanos.sort(key=lambda x: x.distancia)
+#         # Ordena los vecinos por distancia
+#         vecinos_mas_cercanos.sort(key=lambda x: x.distancia)
 
-        # Crea un DataFrame para mostrar los resultados
-        mostrar_vecinos(vecinos_mas_cercanos, k)
+#         # Crea un DataFrame para mostrar los resultados
+#         # mostrar_vecinos(vecinos_mas_cercanos, k)
 
-        # Almacena el ID del último vecino más cercano para esta instancia y k
-        vecinos_k_actual.append(vecinos_mas_cercanos[-1].id)
+#         # Almacena el ID del último vecino más cercano para esta instancia y k
+#         vecinos_k_actual.append(vecinos_mas_cercanos[-1].id)
 
-        # Almacena la cantidad de coincidencias
-        coincidencias_k_actual.append(sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase))
+#         # Almacena la cantidad de coincidencias
+#         coincidencias_k_actual.append(sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase))
 
-        # Cuenta cuántas predicciones coinciden con el valor de la clase
-        coincidencias = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase)
+#         # Cuenta cuántas predicciones coinciden con el valor de la clase
+#         coincidencias = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase)
 
-        # Almacena los resultados
-        resultados_instancia.append({'K': f'k={k}', 'Coincidencias': coincidencias})
+#         # Almacena los resultados
+#         resultados_instancia.append({'K': f'k={k}', 'Coincidencias': coincidencias})
 
-    vecinos_por_k.append([f'k={i}'] + vecinos_k_actual)
-    coincidencias_por_k.append([f'k={i}'] + coincidencias_k_actual)
+#     vecinos_por_k.append([f'k={i}'] + vecinos_k_actual)
+#     coincidencias_por_k.append([f'k={i}'] + coincidencias_k_actual)
 
-    # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para esta instancia
-    df_coincidencias_instancia = pd.DataFrame(resultados_instancia)
-    print(f"\nResultados para la instancia i{i}:")
-    print(df_coincidencias_instancia)
+#     # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para esta instancia
+#     df_coincidencias_instancia = pd.DataFrame(resultados_instancia)
+#     print(f"\nResultados para la instancia i{i}:")
+#     print(df_coincidencias_instancia)
     
-    # Calcula la precisión del modelo para esta instancia
-    precision = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase) / k
-    resultados_random.append({'i': f'i{i}', 'Precisión': precision})
+#     # Calcula la precisión del modelo para esta instancia
+#     precision = sum(1 for vecino in vecinos_mas_cercanos if vecino.clase == instancia_nueva.clase) / k
+#     resultados_random.append({'i': f'i{i}', 'Precisión': precision})
 
-# Crea un DataFrame para mostrar los resultados de coincidencias con la clase para todas las instancias
-df_resultados_random = pd.DataFrame(resultados_random)
-print("\nResultados de precisión para todas las instancias:")
-print(df_resultados_random)
+# # Crea un DataFrame para mostrar los resultados de coincidencias con la clase para todas las instancias
+# df_resultados_random = pd.DataFrame(resultados_random)
+# print("\nResultados de precisión para todas las instancias:")
+# print(df_resultados_random)
 
-# Calcula la precisión promedio del modelo
-precision_promedio = df_resultados_random['Precisión'].mean()
-print("Precisión promedio del modelo:", precision_promedio)
+# # Calcula la precisión promedio del modelo
+# precision_promedio = df_resultados_random['Precisión'].mean()
+# print("Precisión promedio del modelo:", precision_promedio)
+
+
+
+if __name__ == "__main__":
+    # Mostrar al usuario las 3 opciones de distancia disponibles para calcular la distancia entre instancias
+    print("Seleccione la distancia a utilizar para calcular la distancia entre instancias:")
+    print("1. Distancia Euclidiana")
+    print("2. Distancia Manhattan")
+    print("3. Distancia de Minkowski")
+    opcion = int(input("Opción: "))
+    if opcion == 1:
+        tipo_calculo = "calcular_distancia_euclidiana"
+    elif opcion == 2:
+        tipo_calculo = "calcular_distancia_manhattan"
+    elif opcion == 3:
+        tipo_calculo = "calcular_distancia_minkowski"    
+    else:
+        print("Opción inválida.")
+        exit()
+    print("Distancia seleccionada:", tipo_calculo)
+    
+    
+##########################################################################
+# Clasificación del conjunto de prueba utilizando la distancia euclidiana
+##########################################################################
+#         distance = euclidean_distance(test_instance, instance)
+def euclidean_distance(test_instance, instance):
+    # Inicializar la distancia
+    distance = 0
+    # Iterar para cada atributo de la instancia
+    for i, attribute in enumerate(instance):
+        # Sumar la diferencia de cada atributo al cuadrado
+        distance += pow(test_instance[i] - attribute, 2)
+    # Calcular la raíz cuadrada de la distancia
+    return math.sqrt(distance)
+
+#         neighbors = find_nearest_neighbors_euclidean(test_instance, train_data.values[:, :-1], train_data.values[:, -1], k)
+def find_nearest_neighbors_euclidean(test_instance, train_data, train_labels, k):
+    # Lista para almacenar las distancias
+    distances = []
+    # Iterar para cada instancia de entrenamiento
+    for i, instance in enumerate(train_data):
+        # Calcular la distancia euclidiana entre la instancia de prueba y la instancia de entrenamiento
+        distance = euclidean_distance(test_instance, instance)
+        # Almacenar la distancia y el índice de la instancia de entrenamiento
+        distances.append((i, distance))
+    # Ordenar las distancias
+    distances.sort(key=lambda x: x[1])
+    # Obtener los k vecinos más cercanos
+    neighbors = distances[:k]
+    # Obtener las etiquetas de los vecinos más cercanos
+    labels = [train_labels[neighbor[0]] for neighbor in neighbors]
+    return labels
+
+if tipo_calculo == 'calcular_distancia_euclidiana':
+    # Lista para almacenar las predicciones
+    predictions = []
+    k = 24  # Número de vecinos a considerar
+
+    for i in range(len(test_data)):
+        test_instance = test_data.iloc[i].values[:-1]
+        neighbors = find_nearest_neighbors_euclidean(test_instance, train_data.values[:, :-1], train_data.values[:, -1], k)
+        labels = [neighbor for neighbor in neighbors]
+        prediction = max(set(labels), key=labels.count)
+        predictions.append(prediction)
+        
+    # Cálculo de la precisión del modelo
+    correct_predictions = 0
+    for i, prediction in enumerate(predictions):
+        if prediction == test_data.values[i][-1]:
+            correct_predictions += 1
+    accuracy = correct_predictions / len(predictions)
+    print("Precisión del modelo:", accuracy)
+        
+##########################################################################
+##########################################################################
+##########################################################################
+            
+##########################################################################
+# Clasificación del conjunto de prueba utilizando la distancia de Minkowski
+##########################################################################
+
+if tipo_calculo == 'calcular_distancia_minkowski':
+    # Lista para almacenar las predicciones
+    predictions = []
+    k = 24  # Número de vecinos a considerar
+    p = 0.0001  # Valor de p para la distancia de Minkowski (buen numero)
+    # p = 1000 # Valor de p para la distancia de Minkowski (buen numero)
+
+    for i in range(len(test_data)):
+        test_instance = test_data.iloc[i].values[:-1]
+        neighbors = find_nearest_neighbors_minkowski(test_instance, train_data.values[:, :-1], train_data.values[:, -1], k, p)
+        labels = [neighbor[1] for neighbor in neighbors]
+        prediction = max(set(labels), key=labels.count)
+        predictions.append(prediction)
+
+    # Cálculo de la precisión del modelo
+    correct_predictions = 0
+    for i in range(len(predictions)):
+        if predictions[i] == test_data.iloc[i][-1]:
+            correct_predictions += 1
+    accuracy = correct_predictions / len(predictions)
+    print("Precisión del modelo: {:.2f}%".format(accuracy * 100))
+
+########################################################################
+########################################################################
+########################################################################
+
+########################################################################
+# Clasificación del conjunto de prueba utilizando la distancia Manhattan
+########################################################################
+
+def calcular_distancia_manhattan(train_data, test_instance):
+    # Inicializa la distancia en 0
+    distance = 0
+    # Calcula la distancia Manhattan entre la instancia de prueba y la instancia actual del conjunto de entrenamiento
+    for i in range(len(test_instance)):
+        distance += abs(test_instance[i] - train_data[i])
+    # Retorna la distancia Manhattan entre la instancia de prueba y la instancia actual del conjunto de entrenamiento
+    return distance
+
+def find_nearest_neighbors_manhattan(test_instance, train_data, train_labels, k):
+    # Lista para almacenar los vecinos más cercanos
+    neighbors = []
+    for i in range(len(train_data)):
+        # Calcula la distancia Manhattan entre la instancia de prueba y la instancia actual del conjunto de entrenamiento
+        distance = calcular_distancia_manhattan(train_data[i], test_instance)
+        # Agrega la instancia actual del conjunto de entrenamiento y su distancia a la lista de vecinos
+        neighbors.append((train_data[i], train_labels[i], distance))
+    # Ordena la lista de vecinos por distancia
+    neighbors.sort(key=lambda x: x[2])
+    # Retorna los k vecinos más cercanos
+    return neighbors[:k]
+
+if tipo_calculo == "calcular_distancia_manhattan":
+    # Lista para almacenar las predicciones
+    predictions = []
+    k = 11  # Número de vecinos a considerar
+
+    for i in range(len(test_data)):
+        test_instance = test_data.iloc[i].values[:-1]
+        neighbors = find_nearest_neighbors_manhattan(test_instance, train_data.values[:, :-1], train_data.values[:, -1], k)
+        labels = [neighbor[1] for neighbor in neighbors]
+        prediction = max(set(labels), key=labels.count)
+        predictions.append(prediction)
+
+    # Cálculo de la precisión del modelo
+    correct_predictions = 0
+    for i in range(len(predictions)):
+        if predictions[i] == test_data.iloc[i][-1]:
+            correct_predictions += 1
+    accuracy = correct_predictions / len(predictions)
+    print("Precisión del modelo: {:.2f}%".format(accuracy * 100))
+    
+
+
 
 # # Ajuste de columnas para el DataFrame de vecinos por k
 # columnas = ['K'] + [f'i{i}' for i in range(1, cantidad_de_vecinos + 1)]
