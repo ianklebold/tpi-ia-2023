@@ -1,2 +1,6 @@
 /venv/
 .idea/
+knnv2/__pycache__/
+knnv2/ui/constants/button/__pycache__/
+knnv2/ui/constants/window/__pycache__/
+knnv2/ui/constants/label/__pycache__/
