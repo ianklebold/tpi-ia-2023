@@ -74,7 +74,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Crear un clasificador KNN ponderado con pesos personalizados
 # {'n_neighbors': 11}
-# k = int(knn_optimo.best_params_)
 k = knn_optimo.best_params_.get('n_neighbors')
 knn = KNeighborsClassifier(n_neighbors=k, weights='distance')
 
