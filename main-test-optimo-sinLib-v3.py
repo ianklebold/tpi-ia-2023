@@ -60,9 +60,29 @@ for index, row in test_data.iterrows():
 def euclidean_distance(instance1, instance2):
     return np.sqrt(np.sum((np.array(instance1.atributos) - np.array(instance2.atributos)) ** 2))
 
+# Realizar el calculo de la distancia Manhattan
+def calcular_distancia_manhattan(instancia, instancia_nueva):
+    distancia = 0
+    for i in range(len(instancia.atributos)):
+        distancia += abs(instancia.atributos[i] - instancia_nueva.atributos[i])
+    return distancia
+
+# Definir una función para calcular la distancia de Minkowski entre dos instancias
+def minkowski_distance(x1, x2, p):
+    distance = 0
+    for i in range(len(x1)):
+        distance += abs(x1[i] - x2[i]) ** p
+
+    # Deshabilitar la advertencia específica (overflow)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="overflow encountered in double_scalars")
+        result = distance ** (1/p)
+    
+    return result
+
 # Definir una función para predecir la clase de una instancia usando KNN estándar
 def predict_knn_standard(train_data, test_instance, k):
-    distances = [(euclidean_distance(train_instance, test_instance), train_instance.clase) for train_instance in train_data]
+    distances = [(calcular_distancia_manhattan(train_instance, test_instance), train_instance.clase) for train_instance in train_data]
     distances.sort(key=lambda x: x[0])
     neighbors = distances[:k]
     class_counts = {}
@@ -76,7 +96,7 @@ def predict_knn_standard(train_data, test_instance, k):
 
 # Definir una función para predecir la clase de una instancia usando KNN ponderado
 def predict_knn_weighted(train_data, test_instance, k):
-    distances = [(euclidean_distance(train_instance, test_instance), train_instance.clase) for train_instance in train_data]
+    distances = [(calcular_distancia_manhattan(train_instance, test_instance), train_instance.clase) for train_instance in train_data]
     distances.sort(key=lambda x: x[0])
     neighbors = distances[:k]
     class_weights = {}
