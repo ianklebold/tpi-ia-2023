@@ -7,6 +7,7 @@ class DistanceMethod(Enum):
     EUCLIDEAN = 1
     MANHATTAN = 2
     CHEBYSHEV = 3
+    MINKOWSKI = 4
 
 
 def calculateDistance(instance, new_instance):
@@ -19,11 +20,11 @@ def calculateDistance(instance, new_instance):
 def findNeighborMoreEarn(k, method):
     instances = ProcessingData.getInstances()
     new_instance = instances.pop(random.randint(0, len(instances)))
-
     distance_functions = {
       DistanceMethod.EUCLIDEAN: calculateDistance,
       DistanceMethod.MANHATTAN: calculateDistanceManhattan,
       DistanceMethod.CHEBYSHEV: calculateChebyshevDistance,
+      DistanceMethod.MINKOWSKI: calculateMinkowskiDistance(new_instance, instances)
     }
 
     if method in distance_functions:
@@ -52,4 +53,9 @@ def calculateChebyshevDistance(instance, new_instance):
     distances.append(abs(instance.atributos[i] - new_instance.atributos[i]))
   return max(distances)
 
-
+def calculateMinkowskiDistance(x1, x2):
+    p = 0.0001
+    distance = 0
+    for i in range(len(x1)):
+        distance += abs(x1[i] - x2[i]) ** p
+    return distance ** (1/p)
