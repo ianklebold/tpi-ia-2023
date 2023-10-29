@@ -158,3 +158,62 @@ def knn_weighted_accuracy(train_data, test_data, k):
 
 accuracy_weighted = knn_weighted_accuracy(instancias_train, instancias_test, k_weighted)
 print(f'Precisión del modelo KNN Ponderado (k={k_weighted}): {accuracy_weighted:.5f}')
+
+def knn_standard_accuracy(train_data, test_data, k, distance):
+    correct = 0
+    for test_instance in test_data:
+        if distance == "euclidean":
+            predicted_class = predict_knn_standard(train_data, test_instance, k, euclidean_distance)
+        elif distance == "manhattan":
+            predicted_class = predict_knn_standard(train_data, test_instance, k, calcular_distancia_manhattan)
+        elif distance == "minkowski":
+            predicted_class = predict_knn_standard(train_data, test_instance, k, lambda x1, x2: minkowski_distance(x1, x2, 3))
+        else:
+            raise ValueError("Distancia no válida")
+        
+        if predicted_class == test_instance.clase:
+            correct += 1
+    return correct / len(test_data)
+
+
+import matplotlib.pyplot as plt
+
+# Definir una función para calcular las precisiones para diferentes valores de K y distancias
+def calculate_precisions_multiple_distances(train_data, test_data, k_values, distances):
+    precisions = {}
+    for distance in distances:
+        precisions[distance] = []
+        for k in k_values:
+            if distance == "euclidean":
+                accuracy = knn_standard_accuracy(train_data, test_data, k, euclidean_distance)
+            elif distance == "manhattan":
+                accuracy = knn_standard_accuracy(train_data, test_data, k, calcular_distancia_manhattan)
+            elif distance == "minkowski":
+                accuracy = knn_standard_accuracy(train_data, test_data, k, lambda x1, x2: minkowski_distance(x1, x2, 3))
+            precisions[distance].append(accuracy)
+    return precisions
+
+# Definir los valores de K a graficar
+k_values = list(range(1, 16))
+
+# Definir las distancias a utilizar
+distances = ["euclidean", "manhattan", "minkowski"]
+
+# Calcular las precisiones para los valores de K y distancias
+precisions = calculate_precisions_multiple_distances(instancias_train, instancias_test, k_values, distances)
+
+# Encontrar el valor óptimo de K para cada distancia
+best_ks = {}
+for distance in distances:
+    best_ks[distance] = find_optimal_k(instancias_train, k_values, distance)
+
+# Graficar los resultados de precisión para los valores de K y distancias
+for distance in distances:
+    plt.plot(k_values, precisions[distance], label=f"{distance.capitalize()} (k={best_ks[distance]})")
+    plt.scatter(best_ks[distance], max(precisions[distance]), color='red')
+plt.xlabel('Valor de K')
+plt.ylabel('Precisión')
+plt.title('Precisión en función del valor de K y distancia')
+plt.xticks(k_values)
+plt.legend()
+plt.show()
