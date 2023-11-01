@@ -1,0 +1,4 @@
+id,age,education,sex,is_smoking,cigsPerDay,BPMeds,prevalentStroke,prevalentHyp,diabetes,totChol,sysBP,diaBP,BMI,heartRate,glucose,TenYearCHD
+1,37,3,0,1,21,59,53.9,92,1,1,1,1,225,129,93,0
+2,100,4,0,1,70,100,150,200,1,1,1,1,400,300,120,1
+1878,60,1,1,1,10,0,0,1,0,217,167.0,109.0,25,95,72,1
